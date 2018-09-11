@@ -1,0 +1,42 @@
+{
+  "name": "ice-php/mini",
+  "description": "迷你Web服务器 ",
+  "keywords": [
+    "icePHP",
+    "mini",
+    "web"
+  ],
+  "homepage": "https://github.com/ice-php/mini",
+  "type": "composer",
+  "license": "MIT",
+  "support": {
+    "source": "https://github.com/ice-php/mini"
+  },
+  "authors": [
+    {
+      "name": "blueice",
+      "email": "liyong@nenu.edu.cn"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.0",
+    "ice-php/router": "dev-master",
+    "ice-php/debug": "dev-master",
+    "ice-php/config": "dev-master"
+  },
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "icePHP\\": "src"
+    }
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.org"
+    }
+  },
+  "config": {
+    "process-timeout": 1800
+  }
+}
