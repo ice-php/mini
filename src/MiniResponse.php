@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace icePHP;
 
-class SMiniResponse
+class MiniResponse
 {
 
     private $buffer = [];

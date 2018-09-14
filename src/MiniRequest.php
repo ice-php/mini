@@ -7,12 +7,12 @@ class MiniRequest
 
     public $gets, $posts, $files, $requests;
 
-    public function __construct($url)
+    public function __construct(string $url)
     {
         $parts = explode('?', $url);
         $gets = [];
         if ($parts[0]) {
-            list ($gets, ) = self::parseMVC($parts[0]);
+            list ($gets,) = self::parseMVC($parts[0]);
         }
         if (isset($parts[1])) {
             parse_str($parts[1], $gets2);
@@ -22,10 +22,10 @@ class MiniRequest
         $this->gets = new \ArrayObject($gets);
     }
 
-    private function parseMVC($path)
+    private function parseMVC(string $path)
     {
         // 系统配置的路径根,通常是 /
-        $path_root = config('system', 'host');
+        $path_root = configDefault('/', 'system', 'host');
 
         // 从Path中去除路径根, home/index
         if ($path_root == substr($path, 0, strlen($path_root))) {
@@ -37,7 +37,7 @@ class MiniRequest
 
         // 如果此地址被配置为忽略解析,则直接包含此文件.
         if (Router::ignore($path)) {
-            return require_once(config('system', 'dir_public') . $path);
+            return require_once(configDefault('./', 'system', 'dir_public') . $path);
         }
 
         // 路由解析,解析结果会存储到$_REQUEST,$_GET中.

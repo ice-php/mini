@@ -21,7 +21,7 @@ class MiniBase
 
     /**
      * 监听请求
-     * @throws \Exception
+     * @throws MiniException
      */
     public function listen()
     {
@@ -31,17 +31,17 @@ class MiniBase
         // 创建一个Socket
         $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         if ($socket === false) {
-            throw new \Exception("can't create socket!" . PHP_EOL . socket_strerror(socket_last_error()));
+            throw new MiniException('SOCKET创建失败:' . socket_strerror(socket_last_error()), MiniException::CREATE_SOCKET_FAIL);
         }
 
         // 绑定监听端口
         if (socket_bind($socket, '10.131.171.178', 8001) === false) {
-            throw new \Exception("socket_bind() failed :reason:" . socket_strerror(socket_last_error($socket)) . PHP_EOL);
+            throw new MiniException('SOCKET绑定失败:' . socket_strerror(socket_last_error($socket)), MiniException::BIND_SOCKET_FAIL);
         }
 
         // 最多允许多少个并发连接
         if (socket_listen($socket, 512) === false) {
-            throw new \Exception("socket_bind() failed :reason:" . socket_strerror(socket_last_error($socket)) . PHP_EOL);
+            throw new MiniException('SOCKET监听失败:' . socket_strerror(socket_last_error($socket)), MiniException::LISTEN_SOCKET_FAIL);
         }
 
         ob_end_flush();
@@ -57,7 +57,7 @@ class MiniBase
             // 读取请求内容
             $request = self::getRequest($sock);
 
-            $response = new SMiniResponse();
+            $response = new MiniResponse();
             self::dispatch($request, $response);
 
             socket_write($sock, $response->getBuffer());
@@ -71,16 +71,16 @@ class MiniBase
 
         // 结束总的SOCKET
         socket_close($socket);
-        throw new \Exception(PHP_EOL . "exit");
+        throw new MiniException('中途退出', MiniException::SOCKET_EXIT);
     }
 
     /**
      * 派发请求
      * @param MiniRequest $request
-     * @param SMiniResponse $response
+     * @param MiniResponse $response
      * @return mixed
      */
-    private function dispatch(MiniRequest $request, SMiniResponse $response)
+    private function dispatch(MiniRequest $request, MiniResponse $response)
     {
         Debug::clear();
 
@@ -105,7 +105,7 @@ class MiniBase
      * 从SOCKET中读取HTTP请求的参数
      * @param resource $sock
      * @return  mixed
-     * @throws \Exception
+     * @throws MiniException
      */
     private function getRequest($sock)
     {
@@ -117,7 +117,7 @@ class MiniBase
         $lines = explode("\r\n", $content);
 
         $line = array_shift($lines);
-        list (, $request, ) = self::getRequestMethod($line);
+        list (, $request,) = self::getRequestMethod($line);
 
         while (true) {
             $line = array_shift($lines);
@@ -142,19 +142,19 @@ class MiniBase
     }
 
     /**
-     * @param $line
+     * @param $line string
      * @return array
-     * @throws \Exception
+     * @throws MiniException
      */
-    private function getRequestMethod($line)
+    private function getRequestMethod(string $line): array
     {
         $parts = explode(' ', $line);
         if (count($parts) != 3) {
-            throw new \Exception('error http method line:' . $line);
+            throw new MiniException('Http模式指定错误:' . $line, MiniException::HTTP_METHOD_ERROR);
         }
         $method = strtoupper($parts[0]);
         if (!in_array($method, ['GET', 'POST'])) {
-            throw new \Exception('not support method:' . $method);
+            throw new MiniException('当前仅支持POST/GET请求:' . $method, MiniException::HTTP_METHOD_UNSUPPORTED);
         }
         return [$method, new MiniRequest($parts[1]), $parts[2]];
     }
