@@ -31,17 +31,17 @@ class MiniBase
         // 创建一个Socket
         $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         if ($socket === false) {
-            throw new MiniException('SOCKET创建失败:' . socket_strerror(socket_last_error()), MiniException::CREATE_SOCKET_FAIL);
+            trigger_error('SOCKET创建失败:' . socket_strerror(socket_last_error()), E_USER_ERROR);
         }
 
         // 绑定监听端口
         if (socket_bind($socket, '10.131.171.178', 8001) === false) {
-            throw new MiniException('SOCKET绑定失败:' . socket_strerror(socket_last_error($socket)), MiniException::BIND_SOCKET_FAIL);
+            trigger_error('SOCKET绑定失败:' . socket_strerror(socket_last_error($socket)), E_USER_ERROR);
         }
 
         // 最多允许多少个并发连接
         if (socket_listen($socket, 512) === false) {
-            throw new MiniException('SOCKET监听失败:' . socket_strerror(socket_last_error($socket)), MiniException::LISTEN_SOCKET_FAIL);
+            trigger_error('SOCKET监听失败:' . socket_strerror(socket_last_error($socket)),E_USER_ERROR);
         }
 
         ob_end_flush();

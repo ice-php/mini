@@ -6,15 +6,6 @@ namespace icePHP;
 
 class MiniException extends \Exception
 {
-    //SOCKET创建失败
-    const CREATE_SOCKET_FAIL = 1;
-
-    //SOCKET绑定失败
-    const BIND_SOCKET_FAIL = 2;
-
-    //SOCKET监听失败
-    const LISTEN_SOCKET_FAIL = 3;
-
     //中途退出
     const SOCKET_EXIT=4;
 
